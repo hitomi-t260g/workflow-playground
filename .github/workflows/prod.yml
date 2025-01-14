@@ -53,7 +53,7 @@ jobs:
           echo "Branch: $BRANCH"
       # ここに本番環境へのデプロイスクリプトを追加
 
-    deploy-production-code:
+  deploy-production-code:
     if: github.event.action == 'prod-code'
     runs-on: ubuntu-latest
     steps:
