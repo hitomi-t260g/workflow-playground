@@ -42,25 +42,12 @@ jobs:
         with:
           fetch-depth: 0  # すべての履歴を取得
 
-      - name: Get PR number
-        id: pr
-        run: |
-          PR_NUMBER=$(gh pr view --json number -q .number || echo "")
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Get commit hashes
         id: get_hashes
         run: |
           SCHEMA_HASH=$(git rev-parse HEAD)
           API_HASH=null
           FRONTEND_HASH=null
-          PR_NUMBER="${{ steps.pr.outputs.PR_NUMBER }}"
-
-          if [ -n "$PR_NUMBER" ]; then
-            SCHEMA_HASH="${SCHEMA_HASH}_PR${PR_NUMBER}"
-          fi
 
           echo "SCHEMA_HASH=$SCHEMA_HASH" >> $GITHUB_OUTPUT
           echo "API_HASH=$API_HASH" >> $GITHUB_OUTPUT
@@ -74,8 +61,8 @@ jobs:
             -d '{
               "schemaCommitHash": "${{ steps.get_hashes.outputs.SCHEMA_HASH }}",
               "apiCommitHash": ${{ steps.get_hashes.outputs.API_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.API_HASH) }},
-              "frontendCommitHash": ${{ steps.get_hashes.outputs.FRONTEND_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.FRONTEND_HASH) }}
-              "approveType": "stg-code"
+              "frontendCommitHash": ${{ steps.get_hashes.outputs.FRONTEND_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.FRONTEND_HASH) }},
+              "approveType": "stg-code",
               "owner": "hitomi-t260g"
             }'
 
