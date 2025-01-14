@@ -5,12 +5,12 @@ name: CI
 # Controls when the workflow will run
 on:
   repository_dispatch:
-    types: [stg, prod]
+    types: [stg-code, prod-db, prod-code]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  deploy-staging:
-    if: github.event.action == 'stg'
+  deploy-staging-code:
+    if: github.event.action == 'stg-code'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Deploy to Staging
+      - name: Deploy code to Staging
         env:
           API_COMMIT_HASH: ${{ github.event.client_payload.apiCommitHash }}
           FRONTEND_COMMIT_HASH: ${{ github.event.client_payload.frontendCommitHash }}
@@ -30,8 +30,8 @@ jobs:
           echo "Schema Commit Hash: $SCHEMA_COMMIT_HASH"
       # ここにステージング環境へのデプロイスクリプトを追加
 
-  deploy-production:
-    if: github.event.action == 'prod'
+  deploy-production-DB:
+    if: github.event.action == 'prod-db'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -39,7 +39,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Deploy to Production
+      - name: Deploy DB to Production
+        env:
+          API_COMMIT_HASH: ${{ github.event.client_payload.apiCommitHash }}
+          FRONTEND_COMMIT_HASH: ${{ github.event.client_payload.frontendCommitHash }}
+          SCHEMA_COMMIT_HASH: ${{ github.event.client_payload.schemaCommitHash }}
+          BRANCH: ${{ github.event.client_payload.branch }}
+        run: |
+          echo "Deploying to Production environment"
+          echo "API Commit Hash: $API_COMMIT_HASH"
+          echo "Frontend Commit Hash: $FRONTEND_COMMIT_HASH"
+          echo "Schema Commit Hash: $SCHEMA_COMMIT_HASH"
+          echo "Branch: $BRANCH"
+      # ここに本番環境へのデプロイスクリプトを追加
+
+    deploy-production-code:
+    if: github.event.action == 'prod-code'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Deploy Code to Production
         env:
           API_COMMIT_HASH: ${{ github.event.client_payload.apiCommitHash }}
           FRONTEND_COMMIT_HASH: ${{ github.event.client_payload.frontendCommitHash }}
