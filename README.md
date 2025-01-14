@@ -48,3 +48,22 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## 注意事項
+
+npm run iosをするとエラーが出る場合は以下参照し、同じエラーかどうかを確認すること
+`https://github.com/expo/expo/issues/20707`
+
+同じ場合は以下を実行する
+
+expoのverが低いとcocoapodsとの互換性がないためupdateする
+
+```text
+npm update
+```
+
+cocoapodsのverが低いとエラーが起きやすいのでupdateする
+
+```text
+sudo gem install cocoapods
+```
