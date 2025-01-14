@@ -74,7 +74,7 @@ jobs:
             -d '{
               "schemaCommitHash": "${{ steps.get_hashes.outputs.SCHEMA_HASH }}",
               "apiCommitHash": ${{ steps.get_hashes.outputs.API_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.API_HASH) }},
-        "frontendCommitHash": ${{ steps.get_hashes.outputs.FRONTEND_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.FRONTEND_HASH) }}
+              "frontendCommitHash": ${{ steps.get_hashes.outputs.FRONTEND_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.FRONTEND_HASH) }}
             }'
 
   # This workflow contains a single job called "test-second"
