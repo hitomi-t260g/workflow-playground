@@ -53,15 +53,13 @@ jobs:
       - name: Get commit hashes
         id: get_hashes
         run: |
-          SCHEMA_HASH=$(git rev-parse HEAD:schema)
-          API_HASH=$(git rev-parse HEAD:api)
-          FRONTEND_HASH=$(git rev-parse HEAD:frontend)
+          SCHEMA_HASH=$(git rev-parse HEAD)
+          API_HASH=null
+          FRONTEND_HASH=null
           PR_NUMBER="${{ steps.pr.outputs.PR_NUMBER }}"
 
           if [ -n "$PR_NUMBER" ]; then
             SCHEMA_HASH="${SCHEMA_HASH}_PR${PR_NUMBER}"
-            API_HASH="${API_HASH}_PR${PR_NUMBER}"
-            FRONTEND_HASH="${FRONTEND_HASH}_PR${PR_NUMBER}"
           fi
 
           echo "SCHEMA_HASH=$SCHEMA_HASH" >> $GITHUB_OUTPUT
@@ -75,8 +73,8 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_WEBHOOK_TOKEN }}" \
             -d '{
               "schemaCommitHash": "${{ steps.get_hashes.outputs.SCHEMA_HASH }}",
-              "apiCommitHash": "${{ steps.get_hashes.outputs.API_HASH }}",
-              "frontendCommitHash": "${{ steps.get_hashes.outputs.FRONTEND_HASH }}"
+              "apiCommitHash": ${{ steps.get_hashes.outputs.API_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.API_HASH) }},
+        "frontendCommitHash": ${{ steps.get_hashes.outputs.FRONTEND_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.FRONTEND_HASH) }}
             }'
 
   # This workflow contains a single job called "test-second"
