@@ -42,12 +42,31 @@ jobs:
         with:
           fetch-depth: 0  # すべての履歴を取得
 
+      - name: Get PR number
+        id: pr
+        run: |
+          PR_NUMBER=$(gh pr view --json number -q .number || echo "")
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Get commit hashes
         id: get_hashes
         run: |
-          echo "SCHEMA_HASH=$(git rev-parse HEAD:schema)" >> $GITHUB_OUTPUT
-          echo "API_HASH=$(git rev-parse HEAD:api)" >> $GITHUB_OUTPUT
-          echo "FRONTEND_HASH=$(git rev-parse HEAD:frontend)" >> $GITHUB_OUTPUT
+          SCHEMA_HASH=$(git rev-parse HEAD:schema)
+          API_HASH=$(git rev-parse HEAD:api)
+          FRONTEND_HASH=$(git rev-parse HEAD:frontend)
+          PR_NUMBER="${{ steps.pr.outputs.PR_NUMBER }}"
+
+          if [ -n "$PR_NUMBER" ]; then
+            SCHEMA_HASH="${SCHEMA_HASH}_PR${PR_NUMBER}"
+            API_HASH="${API_HASH}_PR${PR_NUMBER}"
+            FRONTEND_HASH="${FRONTEND_HASH}_PR${PR_NUMBER}"
+          fi
+
+          echo "SCHEMA_HASH=$SCHEMA_HASH" >> $GITHUB_OUTPUT
+          echo "API_HASH=$API_HASH" >> $GITHUB_OUTPUT
+          echo "FRONTEND_HASH=$FRONTEND_HASH" >> $GITHUB_OUTPUT
 
       - name: Send API Request
         run: |
