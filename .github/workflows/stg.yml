@@ -59,11 +59,11 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.SLACK_WEBHOOK_TOKEN }}" \
             -d '{
-              "schemaCommitHash": "${{ steps.get_hashes.outputs.SCHEMA_HASH }}",
+              "schemaCommitHash": "${{ github.repository }}",
               "apiCommitHash": ${{ steps.get_hashes.outputs.API_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.API_HASH) }},
               "frontendCommitHash": ${{ steps.get_hashes.outputs.FRONTEND_HASH == 'null' && 'null' || format('"{0}"', steps.get_hashes.outputs.FRONTEND_HASH) }},
               "approveType": "stg-code",
-              "owner": "hitomi-t260g"
+              "owner": "${{ github.repository_owner }}"
             }'
 
   # This workflow contains a single job called "test-second"
